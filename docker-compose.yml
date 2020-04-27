@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: example
 
   peering_manager:
-    image: peering_manager:latest
+    image: mckay1717/peering-manager
     restart: always
     environment:
       DATABASE_NAME: peering_manager
