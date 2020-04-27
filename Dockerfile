@@ -45,7 +45,7 @@ RUN apt update && apt install bgpq3 -y
 ### Get latest version  ####
 RUN git clone https://github.com/respawner/peering-manager.git /peering-manager
 WORKDIR /peering-manager/
-VOLUME /peering-manager/
+
 #Install requierement
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -57,6 +57,10 @@ COPY entrypoint.sh /entrypoint.sh
 RUN apt-get --no-install-recommends install cron -y
 ADD peering-manager.cron /peering-manager.cron
 RUN /usr/bin/crontab /peering-manager.cron
+
+#Setup a volume to save install state
+RUN mkdir /config
+VOLUME /config
 
 #Prepare exec
 RUN chmod 755 /entrypoint.sh
