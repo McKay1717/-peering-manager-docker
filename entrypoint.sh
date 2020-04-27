@@ -7,7 +7,7 @@ if [ ! -f "./install.lock" ]; then
     touch ./install.lock
 fi
 #Start Cron
-/usr/sbin/cron -f -l 8
+/usr/sbin/cron -l 8
 #Start Peering Manager
 python3 manage.py runserver 0.0.0.0:8000 --insecure
 
