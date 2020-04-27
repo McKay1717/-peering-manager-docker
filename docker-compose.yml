@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: peering_manager
+      POSTGRES_PASSWORD: example
+
+  peering_manager:
+    image: peering_manager:latest
+    restart: always
+    environment:
+      DATABASE_NAME: peering_manager
+      DATABASE_USER: peering_manager
+      DATABASE_PASSWORD: example
+      DATABASE_HOST: db
+      SECRET_KEY: 4e22f4cb679416c2322f484bc4fb8cddd9a32fb2
+    ports:
+      - 8080:8000
