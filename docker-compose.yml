@@ -13,6 +13,7 @@ services:
     image: mckay1717/peering-manager
     restart: always
     environment:
+      MY_ASN: 204708
       DATABASE_NAME: peering_manager
       DATABASE_USER: peering_manager
       DATABASE_PASSWORD: example
@@ -20,3 +21,45 @@ services:
       SECRET_KEY: 4e22f4cb679416c2322f484bc4fb8cddd9a32fb2
     ports:
       - 8080:8000
+
+    tasker:
+            image: strm/tasker
+            volumes:
+                - "/var/run/docker.sock:/var/run/docker.sock"
+            environment:
+                configuration: |
+                    schedule:
+                        - every: minute
+                        task: pollsessions
+                        - every: hour
+                        task: check_for_ix_peering_sessions
+                        - every: hour
+                        task: configure_routers
+                        - every: day
+                        task: peeringdb_sync
+                        - every: day
+                        task: check_for_ix_peering_sessions
+                        - every: day
+                        task: grab_prefixes
+                    tasks:
+                        docker:
+                            - name: peeringdb_sync
+                              image:  mckay1717:peering-manager
+                              script:
+                                  - python3 manage.py peeringdb_sync
+                            - name: configure_routers
+                              image: mckay1717:peering-manager
+                              script:
+                                  - python3 manage.py configure_routers --no-commit-check
+                            - name: pollsessions
+                              image: mckay1717:peering-manager
+                              script:
+                                  - python3 manage.py poll_peering_sessions --all
+                            - name: check_for_ix_peering_sessions
+                              image: mckay1717:peering-manager
+                              script:
+                                  - python3 manage.py check_for_ix_peering_sessions
+                            - name: grab_prefixes
+                              image: mckay1717:peering-manager
+                              script:
+                                  - python3 manage.py grab_prefixes --limit 100                                

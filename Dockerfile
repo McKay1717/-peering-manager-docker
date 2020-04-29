@@ -53,11 +53,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY configuration.py /peering-manager/peering_manager/configuration.py
 COPY entrypoint.sh /entrypoint.sh
 
-#Prepare Cron
-RUN apt-get --no-install-recommends install cron -y
-ADD peering-manager.cron /peering-manager.cron
-RUN /usr/bin/crontab /peering-manager.cron
-
 #Setup a volume to save install state
 RUN mkdir /config
 VOLUME /config
