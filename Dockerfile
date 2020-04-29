@@ -40,7 +40,8 @@ ENV NETBOX_DEVICE_ROLES "DefaultString"
 ##########
 
 ###SETUP THE SYSTEM####
-RUN apt update && apt install bgpq3 -y
+RUN apt update && apt install bgpq3 supervisor -y
+RUN apt-get --no-install-recommends install cron
 
 ### Get latest version  ####
 RUN git clone https://github.com/respawner/peering-manager.git /peering-manager
@@ -49,18 +50,17 @@ WORKDIR /peering-manager/
 #Install requierement
 RUN pip install --no-cache-dir -r requirements.txt
 
-#Install config file based on ENV
-COPY configuration.py /peering-manager/peering_manager/configuration.py
-COPY entrypoint.sh /entrypoint.sh
+#Install config file
+COPY rootfs /
 
 #Setup a volume to save install state
 RUN mkdir /config
 VOLUME /config
 
 #Prepare exec
-RUN chmod 755 /entrypoint.sh
+RUN chmod 755 /scripts/start_peering_manager.sh
 
 #Exec
-ENTRYPOINT /entrypoint.sh
+CMD ["/usr/bin/supervisord","-n"]
 
 EXPOSE 8000/tcp
